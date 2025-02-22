@@ -2,14 +2,14 @@
 import { SITE_TITLE, NAV_LINKS as links } from "@/consts";
 ---
 
-<nav class="w-full !z-[9999] py-5 px-4 bg-black/90 backdrop-blur-sm">
+<nav class="w-full z-9999! py-5 px-4 bg-black/90 backdrop-blur-xs">
   <div
     class="w-full grid gap-4 md:px-5 place-items-center grid-cols-1 md:flex md:justify-between md:px-4"
   >
     <a href="/">
       <div
         id="logo"
-        class="pt-2 pb-1 !grid !place-items-center select-none leading-none hover:bg-black bg-white scale-110 hover:text-white text-black px-4 transition-all ease-in-out"
+        class="pt-2 pb-1 grid! place-items-center! select-none leading-none hover:bg-black bg-white scale-110 hover:text-white text-black px-4 transition-all ease-in-out"
       >
         {SITE_TITLE}
       </div>
@@ -18,15 +18,10 @@ import { SITE_TITLE, NAV_LINKS as links } from "@/consts";
       <div class="hidden md:block">/</div>
       {
         links.map((link) => {
-          const href =
-            link.href ?? link.title.toLowerCase().replaceAll(" ", "-");
-          const pathname = Astro.url.pathname.replace(
-            import.meta.env.BASE_URL,
-            "",
-          );
+          const href = link.href ?? link.title.toLowerCase().replaceAll(" ", "-");
+          const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, "");
           const subpath = pathname.match(/[^\/]+/g);
-          const isActive =
-            href === pathname || href === "/" + (subpath?.[0] || "");
+          const isActive = href === pathname || href === "/" + (subpath?.[0] || "");
           return (
             <>
               <a
@@ -51,10 +46,10 @@ import { SITE_TITLE, NAV_LINKS as links } from "@/consts";
     if (!logo) return;
     if (window.scrollY > 100) {
       logo.className =
-        "pt-2 pb-1 !grid !place-items-center select-none leading-none hover:bg-white bg-black scale-100 hover:text-black text-white px-4 transition-all ease-in-out";
+        "pt-2 pb-1 grid! place-items-center! select-none leading-none hover:bg-white bg-black scale-100 hover:text-black text-white px-4 transition-all ease-in-out";
     } else {
       logo.className =
-        "pt-2 pb-1 !grid !place-items-center select-none leading-none hover:bg-black bg-white scale-110 hover:text-white text-black px-4 transition-all ease-in-out";
+        "pt-2 pb-1 grid! place-items-center! select-none leading-none hover:bg-black bg-white scale-110 hover:text-white text-black px-4 transition-all ease-in-out";
     }
   });
 </script>

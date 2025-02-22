@@ -10,7 +10,7 @@ const { title, slug, excerpt, date } = Astro.props;
 ---
 
 <div
-  class="w-full mx-auto bg-gradient-to-br relative pb-5 from-white/[0.001] to-white/[0.01] border-2 border-white rounded-lg overflow-hidden"
+  class="w-full mx-auto bg-linear-to-br relative pb-5 from-white/[0.001] to-white/[0.01] border-2 border-white rounded-lg overflow-hidden"
 >
   <div class="flex items-center justify-start px-4 py-2 bg-white/95">
     <div class="flex space-x-2">
@@ -31,7 +31,7 @@ const { title, slug, excerpt, date } = Astro.props;
           date.toLocaleDateString("en-us", {
             year: "numeric",
             month: "short",
-            day: "numeric",
+            day: "numeric"
           })
         }]
       </p>
@@ -47,11 +47,8 @@ const { title, slug, excerpt, date } = Astro.props;
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <path
-            stroke-linecap="round"
-            stroke-jine-join="round"
-            stroke-width={2}
-            d="M9 5l7 7-7 7"></path>
+          <path stroke-linecap="round" stroke-jine-join="round" stroke-width={2} d="M9 5l7 7-7 7"
+          ></path>
         </svg>
       </p>
     </a>
