@@ -219,25 +219,16 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
           marginBottom: "0.5rem",
         }}
       >
-        {iconBase64 && (
-          <img
-            src={iconBase64}
-            width={56}
-            height={56}
-            style={{
-              borderRadius: "50%",
-            }}
-          />
-        )}
+        {iconBase64 && <img src={iconBase64} width={56} height={56} />}
         <div
           style={{
             display: "flex",
             fontSize: 32,
-            color: cfg.theme.colors[colorScheme].gray,
+            color: cfg.theme.colors[colorScheme].dark,
             fontFamily: bodyFont,
           }}
         >
-          {cfg.baseUrl}
+          {cfg.pageTitle}
         </div>
       </div>
 
@@ -309,7 +300,7 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
             display: "flex",
             alignItems: "center",
             gap: "2rem",
-            color: cfg.theme.colors[colorScheme].gray,
+            color: cfg.theme.colors[colorScheme].dark,
             fontSize: 28,
           }}
         >
@@ -363,7 +354,7 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
                 display: "flex",
                 padding: "0.5rem 1rem",
                 backgroundColor: cfg.theme.colors[colorScheme].highlight,
-                color: cfg.theme.colors[colorScheme].secondary,
+                color: cfg.theme.colors[colorScheme].dark,
                 borderRadius: "10px",
                 fontSize: 24,
               }}
