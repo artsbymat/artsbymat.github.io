@@ -31,7 +31,7 @@ jobs:
             --depth 1 \
             --branch main \
             "https://oauth2:${GITLAB_PAT}@gitlab.com/artsbymat-me/vault.git" \
-            content
+            private
         env:
           GITLAB_PAT: ${{ secrets.GITLAB_PAT }}
 
