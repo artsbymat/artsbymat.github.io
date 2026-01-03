@@ -66,6 +66,7 @@ async function mouseEnterHandler(
   const popoverInner = document.createElement("div")
   popoverInner.classList.add("popover-inner")
   popoverInner.dataset.contentType = contentType ?? undefined
+  popoverInner.dataset.noExcalidraw = "true"
   popoverElement.appendChild(popoverInner)
 
   switch (contentTypeCategory) {
@@ -95,6 +96,10 @@ async function mouseEnterHandler(
       html.querySelectorAll("[id]").forEach((el) => {
         const targetID = `popover-internal-${el.id}`
         el.id = targetID
+      })
+      // Mark excalidraw images to prevent processing in popover
+      html.querySelectorAll('img[src$=".excalidraw.svg"]').forEach((img) => {
+        ;(img as HTMLElement).dataset.noExcalidraw = "true"
       })
       const elts = [...html.getElementsByClassName("popover-hint")]
       if (elts.length === 0) return
