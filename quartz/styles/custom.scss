@@ -8,6 +8,11 @@ html {
   }
 }
 
+.center article iframe,
+.popover-inner iframe {
+  max-width: 100%;
+}
+
 @media all
   and (min-width: #{map.get($breakpoints, desktop)})
   and (max-width: 1920px) {
