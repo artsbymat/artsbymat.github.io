@@ -1,8 +1,50 @@
+@use "sass:map";
 @use "./variables.scss" as *;
 @use "./base.scss";
 
 html {
   @media all and ($mobile) {
     scroll-padding-top: 4rem;
+  }
+}
+
+@media all
+  and (min-width: #{map.get($breakpoints, desktop)})
+  and (max-width: 1920px) {
+  .page {
+    max-width: 100vw !important;
+    & > #quartz-body {
+      grid-template-columns: minmax(260px, 320px) minmax(0, 1fr) minmax(260px, 320px) !important;
+
+      .page-header,
+      .center,
+      footer {
+        max-width: #{map.get($breakpoints, mobile)};
+        margin-left: auto !important;
+        margin-right: auto !important;
+        min-width: 0 !important;
+        width: 100% !important;
+      }
+    }
+
+    & .sidebar {
+      padding: 2rem !important;
+    }
+
+    & .page-header {
+      margin: 2rem 0 0 0 !important;
+    }
+  }
+}
+
+@media all and ($tablet) {
+  .page {
+    & .sidebar {
+      padding: 2rem !important;
+    }
+
+    & .page-header {
+      margin: 2rem 0 0 0 !important;
+    }
   }
 }
