@@ -2,12 +2,6 @@
 @use "./variables.scss" as *;
 @use "./base.scss";
 
-html {
-  @media all and ($mobile) {
-    scroll-padding-top: 4rem;
-  }
-}
-
 .center article iframe,
 .popover-inner iframe {
   max-width: 100%;
