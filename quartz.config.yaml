@@ -227,7 +227,12 @@ plugins:
     enabled: true
     options:
       provider: giscus
-      options: {}
+      options:
+        repo: artsbymat/artsbymat.github.io
+        repoId: R_kgDOVYI9Gg
+        category: Announcements
+        categoryId: DIC_kwDOVYI9Gs4DJrTe
+        lang: id
     layout:
       position: afterBody
       priority: 10
