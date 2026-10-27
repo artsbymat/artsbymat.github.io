@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
 configuration:
   pageTitle: Artsbymat
-  pageTitleSuffix: " | Rahmat Ardiansyah"
+  pageTitleSuffix: ""
   enableSPA: true
   enablePopovers: true
   analytics:
@@ -21,9 +21,9 @@ configuration:
     fontOrigin: googleFonts
     cdnCaching: true
     typography:
-      header: Schibsted Grotesk
-      body: Source Sans Pro
-      code: IBM Plex Mono
+      header: Inter
+      body: Inter
+      code: JetBrains Mono
     colors:
       lightMode:
         light: "#faf8f8"
@@ -59,8 +59,8 @@ plugins:
     enabled: true
     options:
       theme:
-        light: light-plus
-        dark: dark-plus
+        light: github-light
+        dark: github-dark
       keepBackground: true
     order: 20
   - source: "@quartz-community/obsidian-flavored-markdown"
@@ -115,6 +115,10 @@ plugins:
     order: 92
   - source: "@quartz-community/quartz-fonts"
     enabled: true
+    options:
+      body: '"Inter", sans-serif'
+      header: '"Inter", serif'
+      code: '"JetBrains Mono", monospace'
   - source: "@quartz-themes/core"
     enabled: false
     options:
@@ -151,7 +155,7 @@ plugins:
   - source: "@quartz-community/favicon"
     enabled: true
   - source: "@quartz-community/og-image"
-    enabled: false
+    enabled: true
   - source: "@quartz-community/cname"
     enabled: true
   - source: "@quartz-community/canvas-page"
