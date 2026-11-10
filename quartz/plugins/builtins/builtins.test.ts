@@ -4,7 +4,7 @@ import { unified } from "unified"
 import remarkParse from "remark-parse"
 import remarkRehype from "remark-rehype"
 import { VFile } from "vfile"
-import { Element, Root } from "hast"
+import { Element, Root, Text } from "hast"
 import { visit } from "unist-util-visit"
 import { BUILTINS, instantiateBuiltins, officialPluginName, planBuiltins, PlanInput } from "."
 import {
@@ -359,6 +359,52 @@ describe("links built-in", () => {
     )
     assert.strictEqual(els[0].properties.data, "../../static/x.svg")
     assert.strictEqual(els[1].properties.src, "../../media/a.mp4")
+  })
+
+  // Obsidian 1.15.0 (remark-obsidian 2.2.1's triage, re-probed): a path that is not valid
+  // percent-encoding names no file, so the link is external; `x:y` has a scheme, `../x:y` doesn't
+  test("links Obsidian reads as external", () => {
+    const { els } = run([a("%zz"), a("a%E2.md"), a("x:y"), a("../x:y")], "sub/note", {}, ["xy"])
+    const classes = els.filter((e) => e.tagName === "a").map((e) => e.properties.className)
+    assert.deepStrictEqual(
+      classes.map((c) => (c as string[])[0]),
+      ["external", "external", "external", "internal"],
+    )
+  })
+
+  test("an image of a missing file without alt text shows its decoded path", () => {
+    const img = (src: string, alt?: string): Element => ({
+      type: "element",
+      tagName: "img",
+      properties: alt === undefined ? { src } : { src, alt },
+      children: [],
+    })
+    const { els } = run(
+      [
+        img("missing%20pic.png"),
+        img("missing%20image.png", "alt"),
+        img("pic.png"),
+        img("/static/x.png"),
+      ],
+      "page",
+      { markdownLinkResolution: "absolute" },
+      ["page", "pic.png"],
+    )
+    assert.deepStrictEqual(
+      els.map((e) => e.properties.alt),
+      ["missing pic.png", "alt", undefined, undefined],
+    )
+  })
+
+  test("pretty links keep the last /-separated part of the link text, on every OS", () => {
+    const { els } = run([a("folder/note"), a("a\\b")], "page", { prettyLinks: true }, [
+      "folder/note",
+      "a\\b",
+    ])
+    assert.deepStrictEqual(
+      els.filter((e) => e.tagName === "a").map((e) => (e.children[0] as Text).value),
+      ["note", "a\\b"],
+    )
   })
 
   test("disableBrokenWikilinks adds a broken class to missing targets", () => {
