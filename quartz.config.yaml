@@ -10,8 +10,9 @@ configuration:
   locale: id-ID
   baseUrl: artsbymat.github.io
   ignorePatterns:
-    - 02. Reference Notes/Excalidraw/Scripts
+    - Excalidraw
     - Attachments Private
+    - Media DB
     - .obsidian
     - Bases
     - Clippings
