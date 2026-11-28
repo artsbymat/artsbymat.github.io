@@ -392,3 +392,118 @@ describe("resolveRelative", () => {
     assert.strictEqual(path.resolveRelative("abc/def" as FullSlug, "ghi/" as SimpleSlug), "../ghi/")
   })
 })
+
+describe("slugs.stripDiacritics (#2410)", () => {
+  const withStrip = <T>(fn: () => T): T => {
+    path.setSlugOptions({ stripDiacritics: true })
+    try {
+      return fn()
+    } finally {
+      path.setSlugOptions(undefined)
+    }
+  }
+
+  test("off by default: slugs keep their diacritics", () => {
+    assert.strictEqual(path.slugifyFilePath("české/čeština.md" as path.FilePath), "české/čeština")
+  })
+
+  test("strips diacritics from folder and file names", () => {
+    withStrip(() => {
+      const slug = (fp: string) => path.slugifyFilePath(fp as path.FilePath)
+      assert.strictEqual(slug("české/Čeština.md"), "ceske/cestina")
+      assert.strictEqual(slug("Příliš žluťoučký kůň.md"), "prilis-zlutoucky-kun")
+      assert.strictEqual(slug("Café/Crème brûlée.md"), "cafe/creme-brulee")
+      assert.strictEqual(slug("Tiếng Việt.md"), "tieng-viet")
+      assert.strictEqual(slug("obrázek.PNG"), "obrazek.PNG")
+      // decomposed input (macOS file names) gives the same slug
+      assert.strictEqual(slug("čeština.md"), "cestina")
+    })
+  })
+
+  test("keeps scripts whose marks are not Latin diacritics", () => {
+    withStrip(() => {
+      const slug = (fp: string) => path.slugifyFilePath(fp as path.FilePath)
+      assert.strictEqual(slug("한국어.md"), "한국어")
+      assert.strictEqual(slug("がぎぐ.md"), "がぎぐ")
+      assert.strictEqual(slug("हिन्दी.md"), "हिन्दी")
+      assert.strictEqual(slug("日本語/中文.md"), "日本語/中文")
+      // Latin letters without a decomposition fold to ASCII (utils 1.3.1)
+      assert.strictEqual(slug("Łódź ø ß.md"), "lodz-o-ss")
+      assert.strictEqual(slug("Æsir.md"), "aesir")
+    })
+  })
+
+  test("is idempotent", () => {
+    withStrip(() => {
+      const once = path.slugifyFilePath("Čeština/Ž.md" as path.FilePath)
+      assert.strictEqual(path.slugifyFilePath(`${once}.md` as path.FilePath), once)
+    })
+  })
+})
+
+describe("normalizeRelativeURLs (SPA navigation and popovers)", () => {
+  // A minimal stand-in for a parsed page: querySelectorAll understands the attribute selectors
+  // `[a=""]` and `[a^="v"]`, comma-separated, as a browser does.
+  function fakePage(attrs: Record<string, string>[]) {
+    const els = attrs.map((a) => ({
+      attrs: { ...a },
+      getAttribute(name: string) {
+        return this.attrs[name] ?? null
+      },
+      setAttribute(name: string, value: string) {
+        this.attrs[name] = value
+      },
+    }))
+    const matches = (el: (typeof els)[number], selector: string) =>
+      selector.split(",").some((part) => {
+        const m = part.trim().match(/^\[(\w+)(\^?)="([^"]*)"\]$/)
+        if (!m) throw new SyntaxError(`unsupported selector ${part}`)
+        const value = el.getAttribute(m[1])
+        if (value === null) return false
+        return m[2] ? value.startsWith(m[3]) : value === m[3]
+      })
+    const page = {
+      querySelectorAll: (selector: string) => els.filter((el) => matches(el, selector)),
+    }
+    return { page: page as unknown as Element, els }
+  }
+
+  test("rebases relative href and src onto the page's URL, keeping fragments; others are left", () => {
+    const { page, els } = fakePage([
+      { href: "./sibling" },
+      { href: "../up/page#part" },
+      { href: "" },
+      { src: "./img.png" },
+      { src: "../media/v.mp4" },
+      { href: "https://example.com/x" },
+      { href: "/absolute" },
+      { href: "#local" },
+      { src: "plain.png" },
+    ])
+    path.normalizeRelativeURLs(page, "https://garden.example/notes/deep/page?q=1#h")
+    assert.deepStrictEqual(
+      els.map((e) => e.attrs),
+      [
+        { href: "/notes/deep/sibling" },
+        { href: "/notes/up/page#part" },
+        // an empty href is the page itself, its query string included (as in the browser)
+        { href: "/notes/deep/page?q=1" },
+        { src: "/notes/deep/img.png" },
+        { src: "/notes/media/v.mp4" },
+        { href: "https://example.com/x" },
+        { href: "/absolute" },
+        { href: "#local" },
+        { src: "plain.png" },
+      ],
+    )
+  })
+
+  // _rebaseHtmlElement used to keep only `pathname + hash` of the resolved URL, so a relative
+  // link or embed with a query string lost it after SPA navigation or in a popover
+  // (`./static/viewer.html?file=a.pdf` → `/notes/static/viewer.html`).
+  test("keeps the query string of a relative URL", () => {
+    const { page, els } = fakePage([{ src: "./viewer.html?file=a.pdf#p2" }])
+    path.normalizeRelativeURLs(page, "https://garden.example/notes/page")
+    assert.deepStrictEqual(els[0].attrs, { src: "/notes/viewer.html?file=a.pdf#p2" })
+  })
+})
